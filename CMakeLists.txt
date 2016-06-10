@@ -47,13 +47,6 @@ if(MSVC90)
   message(STATUS "Disabling memory alignment for MSVC8")
 endif(MSVC90)
 
-# On the Mac platform, configure the RPATH as per the install, to
-# avoid the problem of loading both the built and installed versions
-# of the shared targets
-IF(APPLE)
-  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
-  SET(CMAKE_INSTALL_RPATH "")
-ENDIF(APPLE)
 
 # Set the output directory for the build executables and libraries
 SET(g2o_RUNTIME_OUTPUT_DIRECTORY ${g2o_SOURCE_DIR}/bin CACHE PATH "Target for the binaries")
@@ -88,7 +81,7 @@ IF(WIN32)
     ENDIF()
     # Fix issue: https://github.com/RainerKuemmerle/g2o/issues/66
     #            Link error LNK2005 due to duplicated symbols
-    add_definitions("/Ob2")	
+    add_definitions("/Ob2")
 	# Fix other stupid warnings:
     add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)  # Avoid deprecated fprintf(), etc.
     add_definitions("/nologo")
@@ -101,6 +94,15 @@ ELSEIF(CYGWIN)
   ADD_DEFINITIONS(-DCYGWIN)
 ELSEIF(APPLE)
   ADD_DEFINITIONS(-DUNIX)
+
+	# On the Mac platform, configure the RPATH as per the install, to
+	# avoid the problem of loading both the built and installed versions
+	# of the shared targets
+	SET(CMAKE_MACOSX_RPATH TRUE)
+  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  SET(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
+	SET(CMAKE_INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/lib )
+
   MESSAGE(STATUS "Compiling on OSX")
 ELSEIF(UNIX)
   ADD_DEFINITIONS(-DUNIX)
@@ -188,7 +190,7 @@ ENDIF(G2O_BUILD_EXAMPLES)
 IF(CMAKE_COMPILER_IS_GNUCXX)
   OPTION (BUILD_WITH_MARCH_NATIVE "Build with \"-march native\"" ON)
   MESSAGE(STATUS "Compiling with GCC")
-  
+
   IF(NOT ${ARCH} MATCHES arm)
     # Generic settings for optimisation
     SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -msse4.2")
@@ -200,8 +202,8 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
   # OS X
   #IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}") 
-    #SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}") 
+    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    #SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
   #ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Linux
   IF(BUILD_WITH_MARCH_NATIVE AND NOT ${ARCH} MATCHES arm AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
