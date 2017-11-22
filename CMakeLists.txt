@@ -5,9 +5,6 @@ if( NOT FIPS_IMPORT)
   include("${FIPS_ROOT_DIR}/cmake/fips.cmake")
 
   fips_setup(PROJECT g2o)
-
-  set(FIPS_RTTI ON)
-  set(FIPS_EXCEPTIONS OFF)
 endif()
 
 set(g2o_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -358,6 +355,10 @@ include_directories(${PROJECT_SOURCE_DIR})
 # TODO:  Skip this in initial fips port
 #FIPS_ADD_SUBDIRECTORY(EXTERNAL)
 FIPS_ADD_SUBDIRECTORY(g2o)
+
+if( NOT FIPS_RTTI )
+  message( SEND_ERROR "G2O requires FIPS_RTTI, please add it to the current build configuration")
+endif()
 
 if( NOT FIPS_IMPORT )
   fips_finish()

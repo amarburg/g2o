@@ -1,7 +1,3 @@
-## This is required for g2o
-message( STATUS   "fips-g2o requires RTTI, enabling....")
-set(FIPS_RTTI on CACHE BOOL  "" FORCE)
-
 ## Allows g2o/config.h to be found
 fips_include_directories( ${FIPS_PROJECT_BUILD_DIR}/include/ )
 

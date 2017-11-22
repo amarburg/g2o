@@ -7,6 +7,5 @@ build:
     - script:
       name: Build
       code: |
-          ./fips set config linux-make-unittest
-          ./fips gen
+          ./fips set config g2o-linux-make-unittest
           ./fips build
