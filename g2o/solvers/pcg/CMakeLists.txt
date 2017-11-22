@@ -1,19 +1,25 @@
-ADD_LIBRARY(solver_pcg ${G2O_LIB_TYPE}
-  solver_pcg.cpp
-  linear_solver_pcg.h  
-  linear_solver_pcg.hpp
-)
 
-SET_TARGET_PROPERTIES(solver_pcg PROPERTIES OUTPUT_NAME ${LIB_PREFIX}solver_pcg)
+fips_begin_module(g2o_solver_pcg)
+#ADD_LIBRARY(solver_pcg ${G2O_LIB_TYPE}
+    fips_files(
+      solver_pcg.cpp
+      linear_solver_pcg.h
+      linear_solver_pcg.hpp
+    )
 
-TARGET_LINK_LIBRARIES(solver_pcg core)
+#SET_TARGET_PROPERTIES(solver_pcg PROPERTIES OUTPUT_NAME ${LIB_PREFIX}solver_pcg)
+  fips_libs( g2o_core )
 
-INSTALL(TARGETS solver_pcg
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
+#TARGET_LINK_LIBRARIES(solver_pcg core)
 
-FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
+# INSTALL(TARGETS solver_pcg
+#   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+#   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+#   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+# )
+#
+# FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
+#
+# INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/solvers/pcg)
 
-INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/solvers/pcg)
+fips_end_module()
