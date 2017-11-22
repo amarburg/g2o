@@ -4,7 +4,10 @@ if( NOT FIPS_IMPORT)
   get_filename_component(FIPS_ROOT_DIR "../fips" ABSOLUTE)
   include("${FIPS_ROOT_DIR}/cmake/fips.cmake")
 
-  fips_setup(PROJECT g2o_C_FLAGS)
+  fips_setup(PROJECT g2o)
+
+  set(FIPS_RTTI ON)
+  set(FIPS_EXCEPTIONS OFF)
 endif()
 
 set(g2o_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
