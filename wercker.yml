@@ -1,0 +1,12 @@
+# wercker version for box creation
+box:
+  id: amarburg/lsdslam-dev-host:latest
+
+build:
+  steps:
+    - script:
+      name: Build
+      code: |
+          ./fips set config linux-make-unittest
+          ./fips gen
+          ./fips build
