@@ -1,10 +1,12 @@
 # Pre-canned types
 FIPS_ADD_SUBDIRECTORY(data)
 FIPS_ADD_SUBDIRECTORY(slam2d)
+FIPS_ADD_SUBDIRECTORY(sba)
+FIPS_ADD_SUBDIRECTORY(slam3d)
+
 
 ## TODO.   Not ported in first pass conversion to fips
-# FIPS_ADD_SUBDIRECTORY(slam3d)
-# FIPS_ADD_SUBDIRECTORY(sba)
+
 # FIPS_ADD_SUBDIRECTORY(sim3)
 # FIPS_ADD_SUBDIRECTORY(icp)
 # FIPS_ADD_SUBDIRECTORY(sclam2d)
