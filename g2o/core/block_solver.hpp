@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "sparse_optimizer.h"
+
 #include <Eigen/LU>
 #include <fstream>
 #include <iomanip>
@@ -36,20 +37,11 @@
 namespace g2o {
 
 template <typename Traits>
-BlockSolver<Traits>::BlockSolver(LinearSolverType* linearSolver) :
-  BlockSolverBase(),
-  _linearSolver(linearSolver)
+BlockSolver<Traits>::BlockSolver(std::unique_ptr<LinearSolverType> linearSolver)
+    :   BlockSolverBase(),
+        _linearSolver(std::move(linearSolver))
 {
   // workspace
-  _Hpp=0;
-  _Hll=0;
-  _Hpl=0;
-  _HplCCS = 0;
-  _HschurTransposedCCS = 0;
-  _Hschur=0;
-  _DInvSchur=0;
-  _coefficients=0;
-  _bschur = 0;
   _xSize=0;
   _numPoses=0;
   _numLandmarks=0;
@@ -70,18 +62,18 @@ void BlockSolver<Traits>::resize(int* blockPoseIndices, int numPoseBlocks,
   if (_doSchur) {
     // the following two are only used in schur
     assert(_sizePoses > 0 && "allocating with wrong size");
-    _coefficients = new double [s];
-    _bschur = new double[_sizePoses];
+    _coefficients.reset(allocate_aligned<double>(s));
+    _bschur.reset(allocate_aligned<double>(_sizePoses));
   }
 
-  _Hpp=new PoseHessianType(blockPoseIndices, blockPoseIndices, numPoseBlocks, numPoseBlocks);
+  _Hpp= g2o::make_unique<PoseHessianType>(blockPoseIndices, blockPoseIndices, numPoseBlocks, numPoseBlocks);
   if (_doSchur) {
-    _Hschur=new PoseHessianType(blockPoseIndices, blockPoseIndices, numPoseBlocks, numPoseBlocks);
-    _Hll=new LandmarkHessianType(blockLandmarkIndices, blockLandmarkIndices, numLandmarkBlocks, numLandmarkBlocks);
-    _DInvSchur = new SparseBlockMatrixDiagonal<LandmarkMatrixType>(_Hll->colBlockIndices());
-    _Hpl=new PoseLandmarkHessianType(blockPoseIndices, blockLandmarkIndices, numPoseBlocks, numLandmarkBlocks);
-    _HplCCS = new SparseBlockMatrixCCS<PoseLandmarkMatrixType>(_Hpl->rowBlockIndices(), _Hpl->colBlockIndices());
-    _HschurTransposedCCS = new SparseBlockMatrixCCS<PoseMatrixType>(_Hschur->colBlockIndices(), _Hschur->rowBlockIndices());
+    _Hschur = g2o::make_unique<PoseHessianType>(blockPoseIndices, blockPoseIndices, numPoseBlocks, numPoseBlocks);
+    _Hll = g2o::make_unique<LandmarkHessianType>(blockLandmarkIndices, blockLandmarkIndices, numLandmarkBlocks, numLandmarkBlocks);
+    _DInvSchur = g2o::make_unique<SparseBlockMatrixDiagonal<LandmarkMatrixType>>(_Hll->colBlockIndices());
+    _Hpl = g2o::make_unique<PoseLandmarkHessianType>(blockPoseIndices, blockLandmarkIndices, numPoseBlocks, numLandmarkBlocks);
+    _HplCCS = g2o::make_unique<SparseBlockMatrixCCS<PoseLandmarkMatrixType>>(_Hpl->rowBlockIndices(), _Hpl->colBlockIndices());
+    _HschurTransposedCCS = g2o::make_unique<SparseBlockMatrixCCS<PoseMatrixType>>(_Hschur->colBlockIndices(), _Hschur->rowBlockIndices());
 #ifdef G2O_OPENMP
     _coefficientsMutex.resize(numPoseBlocks);
 #endif
@@ -91,32 +83,21 @@ void BlockSolver<Traits>::resize(int* blockPoseIndices, int numPoseBlocks,
 template <typename Traits>
 void BlockSolver<Traits>::deallocate()
 {
-  delete _Hpp;
-  _Hpp=0;
-  delete _Hll;
-  _Hll=0;
-  delete _Hpl;
-  _Hpl = 0;
-  delete _Hschur;
-  _Hschur=0;
-  delete _DInvSchur;
-  _DInvSchur=0;
-  delete[] _coefficients;
-  _coefficients = 0;
-  delete[] _bschur;
-  _bschur = 0;
-  delete _HplCCS;
-  _HplCCS = 0;
-  delete _HschurTransposedCCS;
-  _HschurTransposedCCS = 0;
+    _Hpp.reset();
+    _Hll.reset();
+    _Hpl.reset();
+    _Hschur.reset();
+    _DInvSchur.reset();
+    _coefficients.reset();
+    _bschur.reset();
+    
+    _HplCCS.reset();
+    _HschurTransposedCCS.reset();
 }
 
 template <typename Traits>
 BlockSolver<Traits>::~BlockSolver()
-{
-  delete _linearSolver;
-  deallocate();
-}
+{}
 
 template <typename Traits>
 bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
@@ -232,8 +213,10 @@ bool BlockSolver<Traits>::buildStructure(bool zeroBlocks)
     }
   }
 
-  if (! _doSchur)
+  if (! _doSchur) {
+    delete schurMatrixLookup;
     return true;
+  }
 
   _DInvSchur->diagonal().resize(landmarkIdx);
   _Hpl->fillSparseBlockMatrixCCS(*_HplCCS);
@@ -350,10 +333,10 @@ bool BlockSolver<Traits>::solve(){
 
   // _Hschur = _Hpp, but keeping the pattern of _Hschur
   _Hschur->clear();
-  _Hpp->add(_Hschur);
+  _Hpp->add(*_Hschur);
 
   //_DInvSchur->clear();
-  memset (_coefficients, 0, _sizePoses*sizeof(double));
+  memset (_coefficients.get(), 0, _sizePoses*sizeof(double));
 # ifdef G2O_OPENMP
 # pragma omp parallel for default (shared) schedule(dynamic, 10)
 # endif
@@ -412,7 +395,7 @@ bool BlockSolver<Traits>::solve(){
   //cerr << "Solve [marginalize] = " <<  get_monotonic_time()-t << endl;
 
   // _bschur = _b for calling solver, and not touching _b
-  memcpy(_bschur, _b, _sizePoses * sizeof(double));
+  memcpy(_bschur.get(), _b, _sizePoses * sizeof(double));
   for (int i=0; i<_sizePoses; ++i){
     _bschur[i]-=_coefficients[i];
   }
@@ -423,7 +406,7 @@ bool BlockSolver<Traits>::solve(){
   }
 
   t=get_monotonic_time();
-  bool solvedPoses = _linearSolver->solve(*_Hschur, _x, _bschur);
+  bool solvedPoses = _linearSolver->solve(*_Hschur, _x, _bschur.get());
   if (globalStats) {
     globalStats->timeLinearSolver = get_monotonic_time() - t;
     globalStats->hessianPoseDimension = _Hpp->cols();
@@ -438,10 +421,10 @@ bool BlockSolver<Traits>::solve(){
   // _x contains the solution for the poses, now applying it to the landmarks to get the new part of the
   // solution;
   double* xp = _x;
-  double* cp = _coefficients;
+  double* cp = _coefficients.get();
 
   double* xl=_x+_sizePoses;
-  double* cl=_coefficients + _sizePoses;
+  double* cl= _coefficients.get() + _sizePoses;
   double* bl=_b+_sizePoses;
 
   // cp = -xp
