@@ -1,7 +1,6 @@
 exports:
   header-dirs:
     - .
+
   modules:
-    g2o_solver_dense: g2o/solver/dense/
-    g2o_types_data:   g2o/types/data/
-    g2o_types_slam2d: g2o/types/slam2d/
+    g2o:              .
