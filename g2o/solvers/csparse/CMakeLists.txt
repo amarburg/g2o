@@ -8,7 +8,7 @@ fips_begin_lib( g2o_csparse_extension )
     g2o_csparse_extension_api.h
   )
 
-  fips_libs( csparse )
+  fips_libs( cxsparse )
 # SET_TARGET_PROPERTIES(csparse_extension PROPERTIES OUTPUT_NAME ${LIB_PREFIX}csparse_extension)
 #
 # IF(BUILD_CSPARSE)
