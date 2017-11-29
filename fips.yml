@@ -1,6 +1,7 @@
 exports:
   header-dirs:
     - .
-
   modules:
     g2o:              .
+defines:
+  FIPS_RTTI: ON
