@@ -1,7 +1,6 @@
-build*
-lib
-bin
-
-.fips-*
-
-.wercker/
+\build*
+\lib
+\bin
+\.vs
+\.vscode
+\.fips-*

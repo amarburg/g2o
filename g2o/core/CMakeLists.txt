@@ -42,18 +42,24 @@ fips_begin_lib( g2o_core )
   )
 
   fips_libs( g2o_stuff )
-# SET_TARGET_PROPERTIES(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
-#
-# TARGET_LINK_LIBRARIES(core stuff)
-#
-# INSTALL(TARGETS core
-#   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-#   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-#   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-# )
-#
-# FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
-#
-# INSTALL(FILES ${headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o/core)
+
+  # set_target_properties(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
+  # target_link_libraries(core PUBLIC stuff ${G2O_EIGEN3_EIGEN_TARGET})
+  #
+  # if (APPLE)
+  #   set_target_properties(core PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  # endif()
+  #
+  # install(TARGETS core
+  #   EXPORT ${G2O_TARGETS_EXPORT_NAME}
+  #   RUNTIME DESTINATION ${RUNTIME_DESTINATION}
+  #   LIBRARY DESTINATION ${LIBRARY_DESTINATION}
+  #   ARCHIVE DESTINATION ${ARCHIVE_DESTINATION}
+  #   INCLUDES DESTINATION ${INCLUDES_DESTINATION}
+  # )
+  #
+  # file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
+  #
+  # install(FILES ${headers} DESTINATION ${INCLUDES_INSTALL_DIR}/core)
 
 fips_end_lib()

@@ -1,20 +1,20 @@
 # Pre-canned types
-FIPS_ADD_SUBDIRECTORY(data)
-FIPS_ADD_SUBDIRECTORY(slam2d)
-FIPS_ADD_SUBDIRECTORY(sba)
-FIPS_ADD_SUBDIRECTORY(slam3d)
+fips_add_subdirectory(data)
+fips_add_subdirectory(slam2d)
+fips_add_subdirectory(slam3d)
+fips_add_subdirectory(sba)
 
 
 ## TODO.   Not ported in first pass conversion to fips
 
-# FIPS_ADD_SUBDIRECTORY(sim3)
-# FIPS_ADD_SUBDIRECTORY(icp)
-# FIPS_ADD_SUBDIRECTORY(sclam2d)
+# fips_add_subdirectory(sim3)
+# fips_add_subdirectory(icp)
+# fips_add_subdirectory(sclam2d)
 #
-# FIPS_ADD_SUBDIRECTORY(slam2d_addons)
-# FIPS_ADD_SUBDIRECTORY(slam3d_addons)
+# fips_add_subdirectory(slam2d_addons)
+# fips_add_subdirectory(slam3d_addons)
 #
 # OPTION(G2O_BUILD_DEPRECATED_TYPES "Compile the deprecated types" OFF)
 # IF(G2O_BUILD_DEPRECATED_TYPES)
-#   FIPS_ADD_SUBDIRECTORY(deprecated)
+#   fips_add_subdirectory(deprecated)
 # ENDIF()

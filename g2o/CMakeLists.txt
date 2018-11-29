@@ -1,28 +1,28 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
 
-FIPS_ADD_SUBDIRECTORY(stuff)
-FIPS_ADD_SUBDIRECTORY(core)
+fips_add_subdirectory(stuff)
+fips_add_subdirectory(core)
 
 IF(G2O_BUILD_APPS)
-  FIPS_ADD_SUBDIRECTORY(apps)
+  fips_add_subdirectory(apps)
 ENDIF(G2O_BUILD_APPS)
 
 # Pre-canned types
-FIPS_ADD_SUBDIRECTORY(types)
+fips_add_subdirectory(types)
 
 # Solvers
-FIPS_ADD_SUBDIRECTORY(solvers)
+fips_add_subdirectory(solvers)
 
 # Examples
 IF(G2O_BUILD_EXAMPLES)
-  FIPS_ADD_SUBDIRECTORY(examples)
+  fips_add_subdirectory(examples)
 ENDIF(G2O_BUILD_EXAMPLES)
 
-IF(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/playground")
+if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/playground")
   # Playground
   OPTION (G2O_BUILD_PLAYGROUND "Build g2o playground" ON)
   IF (G2O_BUILD_PLAYGROUND)
     MESSAGE(STATUS "building playground")
-    FIPS_ADD_SUBDIRECTORY(playground)
+    fips_add_subdirectory(playground)
   ENDIF()
 ENDIF()

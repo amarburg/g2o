@@ -1,19 +1,19 @@
-FIPS_ADD_SUBDIRECTORY(pcg)
-FIPS_ADD_SUBDIRECTORY(dense)
-FIPS_ADD_SUBDIRECTORY(structure_only)
+fips_add_subdirectory(pcg)
+fips_add_subdirectory(dense)
+fips_add_subdirectory(structure_only)
 
 IF(CSPARSE_FOUND)
-  FIPS_ADD_SUBDIRECTORY(csparse)
-  FIPS_ADD_SUBDIRECTORY(slam2d_linear)
+  fips_add_subdirectory(csparse)
+  fips_add_subdirectory(slam2d_linear)
 ENDIF()
 
 IF(CHOLMOD_FOUND)
-  FIPS_ADD_SUBDIRECTORY(cholmod)
+  fips_add_subdirectory(cholmod)
 ENDIF(CHOLMOD_FOUND)
 
 # Sparse Module of Eigen is stable starting from 3.1
 IF (DEFINED EIGEN3_VERSION)
   IF(${EIGEN3_VERSION} VERSION_GREATER "3.1.0" OR ${EIGEN3_VERSION} VERSION_EQUAL "3.1.0")
-    FIPS_ADD_SUBDIRECTORY(eigen)
+    fips_add_subdirectory(eigen)
   ENDIF()
 ENDIF()

@@ -3,5 +3,7 @@ exports:
     - .
   modules:
     g2o:              .
+
 defines:
   FIPS_RTTI: ON
+  FIPS_UNITTESTS_RUN_AFTER_BUILD: ON

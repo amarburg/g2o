@@ -4,8 +4,7 @@ fips_begin_lib( g2o_csparse_extension )
   fips_include_directories(${CSPARSE_INCLUDE_DIR})
 
   fips_files(
-    csparse_helper.cpp csparse_helper.h
-    g2o_csparse_extension_api.h
+    csparse_helper.cpp csparse_extension.cpp
   )
 
   fips_libs( cxsparse )

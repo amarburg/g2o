@@ -1,14 +1,14 @@
-FIPS_ADD_SUBDIRECTORY(g2o_cli)
-FIPS_ADD_SUBDIRECTORY(g2o_hierarchical)
+fips_add_subdirectory(g2o_cli)
+fips_add_subdirectory(g2o_hierarchical)
 
 IF (G2O_HAVE_OPENGL)
-  FIPS_ADD_SUBDIRECTORY(g2o_simulator)
+  fips_add_subdirectory(g2o_simulator)
 ENDIF()
 
 IF(QGLVIEWER_FOUND AND Qt5_FOUND)
-  FIPS_ADD_SUBDIRECTORY(g2o_viewer)
+  fips_add_subdirectory(g2o_viewer)
 ENDIF()
 
 IF(G2O_BUILD_LINKED_APPS)
-  FIPS_ADD_SUBDIRECTORY(linked_binaries)
+  fips_add_subdirectory(linked_binaries)
 ENDIF()

@@ -1,4 +1,3 @@
-
 if( NOT FIPS_IMPORT)
   cmake_minimum_required(VERSION 3.5)
   get_filename_component(FIPS_ROOT_DIR "../fips" ABSOLUTE)
@@ -10,17 +9,17 @@ endif()
 set(g2o_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # The library prefix
-SET(LIB_PREFIX g2o_)
+set(LIB_PREFIX g2o_)
 
-SET(g2o_C_FLAGS)
-SET(g2o_CXX_FLAGS)
+set(g2o_C_FLAGS)
+set(g2o_CXX_FLAGS)
 
 # default built type
-IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Release CACHE STRING
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
       FORCE)
-ENDIF(NOT CMAKE_BUILD_TYPE)
+endif(NOT CMAKE_BUILD_TYPE)
 
 # postfix, based on type
 # SET(CMAKE_DEBUG_POSTFIX "_d" CACHE STRING "postfix applied to debug build of libraries")
@@ -28,23 +27,24 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 # SET(CMAKE_RELWITHDEBINFO_POSTFIX "_rd" CACHE STRING "postfix applied to release-with-debug-information libraries")
 # SET(CMAKE_MINSIZEREL_POSTFIX "_s" CACHE STRING "postfix applied to minimium-size-build libraries")
 
+
 # work out the postfix; required where we use OUTPUT_NAME
-IF(CMAKE_BUILD_TYPE MATCHES Release)
-  SET(EXE_POSTFIX)
-ELSEIF(CMAKE_BUILD_TYPE MATCHES Debug)
-  SET(EXE_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-ELSEIF(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
-  SET(EXE_POSTFIX ${CMAKE_RELWITHDEBINFO_POSTFIX})
-ELSEIF(CMAKE_BUILD_TYPE MATCHES MinSizeRel)
-  SET(EXE_POSTFIX ${CMAKE_MINSIZEREL_POSTFIX})
-ENDIF(CMAKE_BUILD_TYPE MATCHES Release)
+if(CMAKE_BUILD_TYPE MATCHES Release)
+  set(EXE_POSTFIX)
+elseif(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(EXE_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+elseif(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+  set(EXE_POSTFIX ${CMAKE_RELWITHDEBINFO_POSTFIX})
+elseif(CMAKE_BUILD_TYPE MATCHES MinSizeRel)
+  set(EXE_POSTFIX ${CMAKE_MINSIZEREL_POSTFIX})
+endif(CMAKE_BUILD_TYPE MATCHES Release)
 
 # Allow the developer to select if Dynamic or Static libraries are built
-OPTION (BUILD_SHARED_LIBS "Build Shared Libraries (preferred and required for the g2o plugin system)" ON)
-SET (G2O_LIB_TYPE STATIC)
-IF (BUILD_SHARED_LIBS)
-  SET (G2O_LIB_TYPE SHARED)
-ENDIF()
+option (BUILD_SHARED_LIBS "Build Shared Libraries (preferred and required for the g2o plugin system)" ON)
+set (G2O_LIB_TYPE STATIC)
+if (BUILD_SHARED_LIBS)
+  set (G2O_LIB_TYPE SHARED)
+endif()
 
 # There seems to be an issue with MSVC8
 # see http://eigen.tuxfamily.org/bz/show_bug.cgi?id=83
@@ -53,13 +53,13 @@ if(MSVC90)
   message(STATUS "Disabling memory alignment for MSVC8")
 endif(MSVC90)
 
-# On the Mac platform, configure the RPATH as per the install, to
-# avoid the problem of loading both the built and installed versions
+# On the Mac platform, configure the RPATH as per the INSTALL, to
+# avoid the problem of loading both the built and INSTALLed versions
 # of the shared targets
-IF(APPLE)
-  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-  SET(CMAKE_INSTALL_RPATH "")
-ENDIF(APPLE)
+if(APPLE)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  set(CMAKE_INSTALL_RPATH "")
+endif(APPLE)
 
 # Set the output directory for the build executables and libraries
 ## et FIPS handle this...
@@ -75,29 +75,29 @@ ENDIF(APPLE)
 
 # Set search directory for looking for our custom CMake scripts to
 # look for SuiteSparse, QGLViewer, and Eigen3.
-LIST(APPEND CMAKE_MODULE_PATH ${g2o_SOURCE_DIR}/cmake_modules)
+list(APPEND CMAKE_MODULE_PATH ${g2o_SOURCE_DIR}/cmake_modules)
 
 # Detect OS and define macros appropriately
-IF(WIN32)
-  ADD_DEFINITIONS(-DWINDOWS)
-  MESSAGE(STATUS "Compiling on Windows")
-ELSEIF(CYGWIN)
-  MESSAGE(STATUS "Compiling on Cygwin")
-  ADD_DEFINITIONS(-DCYGWIN)
-ELSEIF(APPLE)
-  ADD_DEFINITIONS(-DUNIX)
-  MESSAGE(STATUS "Compiling on OSX")
-ELSEIF(UNIX)
-  ADD_DEFINITIONS(-DUNIX)
-  MESSAGE(STATUS "Compiling on Unix")
-ENDIF(WIN32)
+if(WIN32)
+  add_definitions(-DWINDOWS)
+  message(STATUS "Compiling on Windows")
+elseif(CYGWIN)
+  message(STATUS "Compiling on Cygwin")
+  add_definitions(-DCYGWIN)
+elseif(APPLE)
+  add_definitions(-DUNIX)
+  message(STATUS "Compiling on OSX")
+elseif(UNIX)
+  add_definitions(-DUNIX)
+  message(STATUS "Compiling on Unix")
+endif(WIN32)
 
 # detect Android Cross Compiler
 # based on android-cmake which sets the variable ANDROID for us
-IF(ANDROID)
-  ADD_DEFINITIONS(-DANDROID)
-  MESSAGE(STATUS "Cross compiling for Android")
-ENDIF()
+if(ANDROID)
+  add_definitions(-DANDROID)
+  message(STATUS "Cross compiling for Android")
+endif()
 
 # For building the CHOLMOD / CSPARSE solvers
 FIND_PACKAGE(Cholmod)
@@ -128,18 +128,19 @@ ELSE()
   MESSAGE(STATUS "Building LGPL code as static library (affects license of the binary)")
 ENDIF()
 
+
 # Eigen library parallelise itself, though, presumably due to performance issues
 # OPENMP is experimental. We experienced some slowdown with it
-SET(G2O_USE_OPENMP OFF CACHE BOOL "Build g2o with OpenMP support (EXPERIMENTAL)")
-IF(G2O_USE_OPENMP)
-  FIND_PACKAGE(OpenMP)
-  IF(OPENMP_FOUND)
-    SET (G2O_OPENMP 1)
-    SET(g2o_C_FLAGS "${g2o_C_FLAGS} ${OpenMP_C_FLAGS}")
-    SET(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -DEIGEN_DONT_PARALLELIZE ${OpenMP_CXX_FLAGS}")
-    MESSAGE(STATUS "Compiling with OpenMP support")
-  ENDIF(OPENMP_FOUND)
-ENDIF(G2O_USE_OPENMP)
+set(G2O_USE_OPENMP OFF CACHE BOOL "Build g2o with OpenMP support (EXPERIMENTAL)")
+if(G2O_USE_OPENMP)
+  find_package(OpenMP)
+  if(OPENMP_FOUND)
+    set (G2O_OPENMP 1)
+    set(g2o_C_FLAGS "${g2o_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -DEIGEN_DONT_PARALLELIZE ${OpenMP_CXX_FLAGS}")
+    message(STATUS "Compiling with OpenMP support")
+  endif(OPENMP_FOUND)
+endif(G2O_USE_OPENMP)
 
 # OpenGL is used in the draw actions for the different types, as well
 # as for creating the GUI itself
@@ -160,6 +161,7 @@ IF(G2O_BUILD_APPS)
   MESSAGE(STATUS "Compiling g2o apps")
 ENDIF(G2O_BUILD_APPS)
 
+
 include(CMakeDependentOption)
 CMAKE_DEPENDENT_OPTION(G2O_BUILD_LINKED_APPS "Build apps linked with the libraries (no plugin system)" OFF
   "G2O_BUILD_APPS" OFF)
@@ -170,37 +172,37 @@ IF(G2O_BUILD_EXAMPLES)
   MESSAGE(STATUS "Compiling g2o examples")
 ENDIF(G2O_BUILD_EXAMPLES)
 
-OPTION(G2O_FAST_MATH "Enable fast math operations" OFF)
-OPTION(G2O_NO_IMPLICIT_OWNERSHIP_OF_OBJECTS "Disables memory management in the graph types, this requires the callers to manager the memory of edges and nodes" OFF)
+option(G2O_FAST_MATH "Enable fast math operations" OFF)
+option(G2O_NO_IMPLICIT_OWNERSHIP_OF_OBJECTS "Disables memory management in the graph types, this requires the callers to manager the memory of edges and nodes" OFF)
 
 # Start of SSE* autodetect code
 # (borrowed from MRPT CMake scripts, BSD)
-OPTION(DO_SSE_AUTODETECT "Enable autodetection of SSE* CPU sets and enable their use in optimized code" ON)
-IF(NOT EXISTS "/proc/cpuinfo")
-	SET(DO_SSE_AUTODETECT OFF)
-ENDIF()
-IF (DO_SSE_AUTODETECT)
-  FILE(READ "/proc/cpuinfo" G2O_CPU_INFO)
-ENDIF()
+option(DO_SSE_AUTODETECT "Enable autodetection of SSE* CPU sets and enable their use in optimized code" ON)
+if(NOT EXISTS "/proc/cpuinfo")
+	set(DO_SSE_AUTODETECT OFF)
+endif()
+if (DO_SSE_AUTODETECT)
+  file(READ "/proc/cpuinfo" G2O_CPU_INFO)
+endif()
 
 # Macro for each SSE* var: Invoke with name in uppercase:
 macro(DEFINE_SSE_VAR  _setname)
 	string(TOLOWER ${_setname} _set)
-	IF (DO_SSE_AUTODETECT)
+	if (DO_SSE_AUTODETECT)
 		# Automatic detection:
-		SET(CMAKE_G2O_HAS_${_setname} 0)
-		IF (${G2O_CPU_INFO} MATCHES ".*${_set}.*")
-			SET(CMAKE_G2O_HAS_${_setname} 1)
-		ENDIF()
-	ELSE (DO_SSE_AUTODETECT)
+		set(CMAKE_G2O_HAS_${_setname} 0)
+		if (${G2O_CPU_INFO} MATCHES ".*${_set}.*")
+			set(CMAKE_G2O_HAS_${_setname} 1)
+		endif()
+	else (DO_SSE_AUTODETECT)
 		# Manual:
-		SET("DISABLE_${_setname}" OFF CACHE BOOL "Forces compilation WITHOUT ${_setname} extensions")
-		MARK_AS_ADVANCED("DISABLE_${_setname}")
-		SET(CMAKE_G2O_HAS_${_setname} 0)
-		IF (NOT DISABLE_${_setname})
-			SET(CMAKE_G2O_HAS_${_setname} 1)
-		ENDIF (NOT DISABLE_${_setname})
-	ENDIF (DO_SSE_AUTODETECT)
+		set("DISABLE_${_setname}" OFF CACHE BOOL "Forces compilation WITHOUT ${_setname} extensions")
+		mark_as_advanced("DISABLE_${_setname}")
+		set(CMAKE_G2O_HAS_${_setname} 0)
+		if (NOT DISABLE_${_setname})
+			set(CMAKE_G2O_HAS_${_setname} 1)
+		endif (NOT DISABLE_${_setname})
+	endif (DO_SSE_AUTODETECT)
 endmacro(DEFINE_SSE_VAR)
 
 # SSE optimizations:
@@ -211,106 +213,106 @@ DEFINE_SSE_VAR(SSE4_2)
 DEFINE_SSE_VAR(SSE4_A)
 
 # Add build flags for clang AND GCC
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
   # SSE2?
-  IF (CMAKE_G2O_HAS_SSE2)
+  if (CMAKE_G2O_HAS_SSE2)
     add_compile_options(-msse2)
-  ENDIF()
+  endif()
   # SSE3?
-  IF (CMAKE_G2O_HAS_SSE3)
+  if (CMAKE_G2O_HAS_SSE3)
     add_compile_options(-msse3 -mssse3)
-  ENDIF()
+  endif()
   # SSE4*?
-  IF (CMAKE_G2O_HAS_SSE4_1)
+  if (CMAKE_G2O_HAS_SSE4_1)
     add_compile_options(-msse4.1)
-  ENDIF()
-  IF (CMAKE_G2O_HAS_SSE4_2)
+  endif()
+  if (CMAKE_G2O_HAS_SSE4_2)
     add_compile_options(-msse4.2)
-  ENDIF()
-  IF (CMAKE_G2O_HAS_SSE4_A)
+  endif()
+  if (CMAKE_G2O_HAS_SSE4_A)
     add_compile_options(-msse4a)
-  ENDIF()
+  endif()
 endif()
 # End of of SSE* autodetect code -------
 
 # Compiler specific options for gcc
-IF(CMAKE_COMPILER_IS_GNUCXX)
-  OPTION (BUILD_WITH_MARCH_NATIVE "Build with \"-march native\"" ON)
-  MESSAGE(STATUS "Compiling with GCC")
+if(CMAKE_COMPILER_IS_GNUCXX)
+  option (BUILD_WITH_MARCH_NATIVE "Build with \"-march native\"" OFF)
+  message(STATUS "Compiling with GCC")
 
   # Generic settings for optimisation
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-  SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
 
-  IF(G2O_FAST_MATH)
-    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math")
-  ENDIF()
+  if(G2O_FAST_MATH)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math")
+  endif()
 
   # switch off optimization for debug builds
-  SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-  SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
 
   # OS X
-  #IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
-    #SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
-  #ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  #if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    #set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+  #endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Linux
-  IF(BUILD_WITH_MARCH_NATIVE AND NOT "${ARCH}" MATCHES "arm" AND "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
-    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
-    SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
-  ENDIF()
+  if(BUILD_WITH_MARCH_NATIVE AND NOT "${CMAKE_SYSTEM_PROCESSOR}" MATCHES "arm" AND "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
+  endif()
   # activate warnings !!!
-  SET(g2o_C_FLAGS "${g2o_C_FLAGS} -Wall -W")
-  SET(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall -W")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+  set(g2o_C_FLAGS "${g2o_C_FLAGS} -Wall -W")
+  set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall -W")
+endif(CMAKE_COMPILER_IS_GNUCXX)
 
-IF(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  MESSAGE(STATUS "Compiling with Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  message(STATUS "Compiling with Clang")
 
   # activate all warnings
-  #SET(g2o_C_FLAGS "${g2o_C_FLAGS} -Weverything")
-  #SET(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Weverything")
-  SET(g2o_C_FLAGS "${g2o_C_FLAGS} -Wall")
-  SET(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall")
-  #SET(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall -stdlib=libc++")
-ENDIF()
+  #set(g2o_C_FLAGS "${g2o_C_FLAGS} -Weverything")
+  #set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Weverything")
+  set(g2o_C_FLAGS "${g2o_C_FLAGS} -Wall")
+  set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall")
+  #set(g2o_CXX_FLAGS "${g2o_CXX_FLAGS} -Wall -stdlib=libc++")
+endif()
 
-IF(MSVC)
-  MESSAGE(STATUS "Compiling with MSVC")
+if(MSVC)
+  message(STATUS "Compiling with MSVC")
 
-  IF (CMAKE_GENERATOR MATCHES "ARM(64)?$")
-    SET(MSVC_ARM ON)
-  ENDIF()
+  if (CMAKE_GENERATOR MATCHES "ARM(64)?$")
+    set(MSVC_ARM ON)
+  endif()
 
-  ADD_DEFINITIONS(-DNOMINMAX)
-  ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
+  add_definitions(-DNOMINMAX)
+  add_definitions(-D_USE_MATH_DEFINES)
 
   # exception handling
-  ADD_DEFINITIONS("/EHsc")
+  add_definitions("/EHsc")
 
-  IF (G2O_FAST_MATH)
-    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /fp:fast")
-  ENDIF()
+  if (G2O_FAST_MATH)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /fp:fast")
+  endif()
 
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Ox /Oi")
-  SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /Ox /Oi")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Ox /Oi")
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /Ox /Oi")
 
-  SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-  SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
 
   # SSE2 optimizations
   # No need to specify if building for x64 (actually, it generates an annoying warning)
   if (NOT MSVC_ARM)
     if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-        ADD_DEFINITIONS("/arch:SSE2")
+        add_definitions("/arch:SSE2")
     endif()
   endif()
 
-  IF (BUILD_SHARED_LIBS)
+  if (BUILD_SHARED_LIBS)
     # disable warning on missing DLL interfaces
-    ADD_DEFINITIONS("/wd4251")
-  ENDIF()
+    add_definitions("/wd4251")
+  endif()
 
   # Fix issue: https://github.com/RainerKuemmerle/g2o/issues/66
   #            Link error LNK2005 due to duplicated symbols
@@ -323,21 +325,30 @@ IF(MSVC)
   add_definitions("/wd4267") # Conversion during return
   add_definitions("/wd4522") # Duplicated operator=() in Eigen headers
 
-ENDIF(MSVC)
+endif(MSVC)
 
 # C++11 support
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # specifying compiler flags
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${g2o_CXX_FLAGS}")
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${g2o_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${g2o_CXX_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${g2o_C_FLAGS}")
 
-# Find Eigen3
-FIND_PACKAGE(Eigen3 REQUIRED)
+# Find Eigen3. First try to find it using the configuration file form
+# because this is our target of choice. If this fails, fall back to the
+# using the module form.
+# See https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html for details
+# find_package(Eigen3 NO_MODULE)
+# if (TARGET Eigen3::Eigen)
+#   set(G2O_EIGEN3_EIGEN_TARGET Eigen3::Eigen)
+# else()
+  find_package(Eigen3 REQUIRED)
+  fips_include_directories(${EIGEN3_INCLUDE_DIR})
+# endif ()
 
 # Set up the top-level include directories
-INCLUDE_DIRECTORIES(${g2o_SOURCE_DIR} ${EIGEN3_INCLUDE_DIR})
+fips_include_directories(${g2o_SOURCE_DIR} ${PROJECT_BINARY_DIR})
 
 # Generate config.h
 SET(G2O_OPENGL_FOUND ${OPENGL_FOUND})
@@ -347,19 +358,24 @@ SET(G2O_SHARED_LIBS ${BUILD_SHARED_LIBS})
 SET(G2O_LGPL_SHARED_LIBS ${BUILD_LGPL_SHARED_LIBS})
 SET(G2O_CXX_COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}")
 configure_file(config.h.in ${FIPS_PROJECT_BUILD_DIR}/include/g2o/config.h)
-include_directories(${FIPS_PROJECT_BUILD_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR})
+fips_include_directories(${FIPS_PROJECT_BUILD_DIR}/include)
+fips_include_directories(${PROJECT_SOURCE_DIR})
 #INSTALL(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/g2o)
 
 # Include the subdirectories
 # TODO:  Skip this in initial fips port
-#FIPS_ADD_SUBDIRECTORY(EXTERNAL)
-FIPS_ADD_SUBDIRECTORY(g2o)
+#fips_add_subdirectory(EXTERNAL)
+fips_add_subdirectory(g2o)
 
 if( NOT FIPS_RTTI )
   message( SEND_ERROR "G2O requires FIPS_RTTI, please add it to the current build configuration")
 endif()
 
 if( NOT FIPS_IMPORT )
+
+  # if( FIPS_UNITTESTS )
+  #   fips_add_subdirectory(unit_test)
+  # endif()
+
   fips_finish()
 endif()

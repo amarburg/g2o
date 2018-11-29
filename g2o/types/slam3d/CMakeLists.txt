@@ -35,6 +35,8 @@ fips_begin_module( g2o_types_slam3d )
       edge_pointxyz.cpp edge_pointxyz.h
       types_slam3d.cpp
       types_slam3d.h
+      edge_xyz_prior.h
+      edge_xyz_prior.cpp
   )
 
   fips_libs( g2o_core )
