@@ -7,7 +7,7 @@ fips_begin_lib( g2o_csparse_extension )
     csparse_helper.cpp csparse_extension.cpp
   )
 
-  fips_libs( cxsparse )
+  fips_libs( ${CSPARSE_LIBRARY} )
 
 fips_end_lib()
 
